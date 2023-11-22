@@ -5,6 +5,7 @@ import org.bson.codecs.pojo.annotations.BsonId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Document
 @Data
@@ -18,4 +19,5 @@ public class Event {
     private String eventDescription;
     private Integer ageLimit;
     private String location;
+    private ArrayList<Section> sections;
 }

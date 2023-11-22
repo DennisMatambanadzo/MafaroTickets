@@ -1,8 +1,9 @@
 package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.dtos.CreateEventRequest;
-import online.epochsolutions.mafaro.dtos.UpdateEventRequest;
+import online.epochsolutions.mafaro.dtos.event.CreateEventRequest;
+import online.epochsolutions.mafaro.dtos.DeleteResponse;
+import online.epochsolutions.mafaro.dtos.event.UpdateEventRequest;
 import online.epochsolutions.mafaro.models.Event;
 import online.epochsolutions.mafaro.services.EventService;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +39,14 @@ public class EventController {
     }
 
     @DeleteMapping("/deleteEvent/{id}")
-    public ResponseEntity<Boolean> deleteEvent( @PathVariable String id){
-
-        return ResponseEntity.ok(eventService.deleteEvent(id));
+    public ResponseEntity<DeleteResponse> deleteEvent( @PathVariable String id){
+        DeleteResponse response = new DeleteResponse();
+        if (eventService.deleteEvent(id)){
+            response.setMessage("Event deleted");
+        }else {
+            response.setMessage("Delete failed! Event does not exist");
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/updateEvent/{id}")

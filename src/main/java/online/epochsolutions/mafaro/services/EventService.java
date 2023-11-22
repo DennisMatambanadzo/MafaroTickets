@@ -1,8 +1,8 @@
 package online.epochsolutions.mafaro.services;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.dtos.CreateEventRequest;
-import online.epochsolutions.mafaro.dtos.UpdateEventRequest;
+import online.epochsolutions.mafaro.dtos.event.CreateEventRequest;
+import online.epochsolutions.mafaro.dtos.event.UpdateEventRequest;
 import online.epochsolutions.mafaro.models.Event;
 import online.epochsolutions.mafaro.repos.EventRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,7 @@ public class EventService {
         event.setEndTime(request.getEndTime());
         event.setStartTime(request.getStartTime());
         event.setAgeLimit(request.getAgeLimit());
+        event.setSections(request.getSections());
        return eventRepository.save(event);
     }
 

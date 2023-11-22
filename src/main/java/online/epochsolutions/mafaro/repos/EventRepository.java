@@ -9,5 +9,7 @@ public interface EventRepository extends MongoRepository<Event,String> {
     @Override
     Optional<Event> findById(String s);
 
+    Optional<Event> findByIdAndSections(String id, String section);
+
     void deleteById(String id);
     }

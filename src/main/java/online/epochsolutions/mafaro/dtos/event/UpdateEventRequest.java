@@ -1,11 +1,11 @@
-package online.epochsolutions.mafaro.dtos;
+package online.epochsolutions.mafaro.dtos.event;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class CreateEventRequest {
+public class UpdateEventRequest {
     private String name;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
