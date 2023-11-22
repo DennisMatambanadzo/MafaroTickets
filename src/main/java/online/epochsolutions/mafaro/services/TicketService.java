@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.OptionalLong;
 
 
 @Service
@@ -22,36 +22,51 @@ public class TicketService {
     private final EventRepository eventRepository;
 
 
-    public Integer generateTicket(CreateTicketRequest request){
+    public Boolean generateTicket(CreateTicketRequest request){
 
-        var opEvent = eventRepository.findById(request.getEventId()).get();
+        var opEvent = eventRepository.findById(request.getEventId());
 
-        Stream<Long> longStream = opEvent.getSections()
-                .stream()
-                .filter(section -> Objects.equals(section.getName(), request.getSection()))
-                .filter(section -> section.getAvailableSlots() > 0).map((section) -> section.getAvailableSlots() - request.getNumberOfTickets());
+       if (opEvent.isPresent()){
+           var event = opEvent.get();
+           OptionalLong max = event.getSections()
+                   .stream()
+                   .filter(section -> Objects.equals(section.getName(), request.getSection()))
+                   .filter(section -> section.getAvailableSlots() > 0)
+                   .mapToLong((section) -> section.getAvailableSlots() - request.getNumberOfTickets())
+                   .max();
 
-        longStream.forEach(System.out::println);
+           if (max.isPresent() && max.getAsLong()>0 ){
+               event.getSections()
+                       .stream()
+                       .filter(section -> Objects.equals(section.getName(), request.getSection()))
+                       .forEach(section -> section.setAvailableSlots(max.getAsLong()));
 
-
-        var ticketList = new ArrayList<Ticket>();
-
-
-
-        for(int i = 0 ; i< request.getNumberOfTickets();i++) {
-            ticketList.add(new Ticket());
-        }
-
-        ticketList.forEach(s-> s.setName(opEvent.getName()));
-        ticketList.forEach(s-> s.setSection(opEvent.getName()));
-        ticketList.forEach(s-> s.setStartTime(opEvent.getStartTime()));
+               eventRepository.save(event);
+               var ticketList = new ArrayList<Ticket>();
 
 
-        ticketRepository.saveAll(ticketList);
+               for(int i = 0; i< request.getNumberOfTickets(); i++) {
+                   ticketList.add(new Ticket());
+               }
 
-        return ticketList.size();
-        
+               ticketList.forEach(s-> s.setName(event.getName()));
+               ticketList.forEach(s-> s.setSection(event.getName()));
+               ticketList.forEach(s-> s.setStartTime(event.getStartTime()));
+//               ticketList.forEach(s -> s.setCreatedAt());
+
+               ticketRepository.saveAll(ticketList);
+
+               return true;
+           }
+
+       }
+
+        return false;
+
     }
+
+
+
 
     public List<Ticket> fetchAllTickets() {
         return ticketRepository.findAll();

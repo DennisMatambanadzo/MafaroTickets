@@ -20,7 +20,7 @@ public class TicketController {
 
 
     @PostMapping("/purchaseTicket")
-    public ResponseEntity<Integer> purchaseTicket(@RequestBody CreateTicketRequest request){
+    public ResponseEntity<Boolean> purchaseTicket(@RequestBody CreateTicketRequest request){
        return ResponseEntity.ok( ticketService.generateTicket(request));
     }
 
