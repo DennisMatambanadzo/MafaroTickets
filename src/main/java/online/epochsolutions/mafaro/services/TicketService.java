@@ -8,6 +8,7 @@ import online.epochsolutions.mafaro.repos.EventRepository;
 import online.epochsolutions.mafaro.repos.TicketRepository;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +36,7 @@ public class TicketService {
                    .mapToLong((section) -> section.getAvailableSlots() - request.getNumberOfTickets())
                    .max();
 
-           if (max.isPresent() && max.getAsLong()>0 ){
+           if (max.isPresent() && max.getAsLong()>=0 ){
                event.getSections()
                        .stream()
                        .filter(section -> Objects.equals(section.getName(), request.getSection()))
@@ -50,9 +51,9 @@ public class TicketService {
                }
 
                ticketList.forEach(s-> s.setName(event.getName()));
-               ticketList.forEach(s-> s.setSection(event.getName()));
+               ticketList.forEach(s-> s.setSection(request.getSection()));
                ticketList.forEach(s-> s.setStartTime(event.getStartTime()));
-//               ticketList.forEach(s -> s.setCreatedAt());
+               ticketList.forEach(s -> s.setCreatedAt(new Timestamp(System.currentTimeMillis())));
 
                ticketRepository.saveAll(ticketList);
 
