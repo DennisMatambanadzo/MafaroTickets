@@ -1,8 +1,7 @@
 package online.epochsolutions.mafaro.services;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.dtos.CreateTicketRequest;
-import online.epochsolutions.mafaro.models.Event;
+import online.epochsolutions.mafaro.dtos.ticket.CreateTicketRequest;
 import online.epochsolutions.mafaro.models.Ticket;
 import online.epochsolutions.mafaro.repos.EventRepository;
 import online.epochsolutions.mafaro.repos.TicketRepository;

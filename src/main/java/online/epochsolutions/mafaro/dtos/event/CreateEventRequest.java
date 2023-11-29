@@ -15,4 +15,5 @@ public class CreateEventRequest {
     private Integer ageLimit;
     private String location;
     private ArrayList<Section> sections;
+
 }

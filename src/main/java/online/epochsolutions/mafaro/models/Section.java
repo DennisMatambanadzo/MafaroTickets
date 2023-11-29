@@ -7,5 +7,6 @@ public class Section {
 
     private String name;
     private Long availableSlots;
+    private Integer price;
 
 }
