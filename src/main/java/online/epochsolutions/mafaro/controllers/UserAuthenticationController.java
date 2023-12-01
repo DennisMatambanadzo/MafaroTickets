@@ -7,13 +7,10 @@ import online.epochsolutions.mafaro.dtos.user.CreateUserAccountResponse;
 import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
-import online.epochsolutions.mafaro.services.UserAccountService;
+import online.epochsolutions.mafaro.authentication.UserAccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/mafaro/admin/user")
@@ -23,7 +20,7 @@ public class UserAuthenticationController {
     private final UserAccountService userAccountService;
 
     @PostMapping("/registration")
-    public ResponseEntity<CreateUserAccountResponse> createUserAccount(@RequestBody CreateUserAccountRequest request) throws UserAccountAlreadyExistsException {
+    public ResponseEntity<CreateUserAccountResponse> createUserAccount(@RequestBody CreateUserAccountRequest request) {
 
         try{
             userAccountService.createUser(request);
@@ -37,6 +34,14 @@ public class UserAuthenticationController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
+//    @PostMapping("/verify")
+//    public ResponseEntity verifyEmail(@RequestParam String token){
+//        if (userAccountService.verifyUser(token)){
+//            return ResponseEntity.ok().build();
+//        }else {
+//            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+//        }
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> userLogin(@RequestBody UserAccountLoginRequest request){

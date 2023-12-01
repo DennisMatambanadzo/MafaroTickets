@@ -3,7 +3,7 @@ package online.epochsolutions.mafaro.controllers;
 import lombok.RequiredArgsConstructor;
 import online.epochsolutions.mafaro.dtos.patron.CreatePatronRequest;
 import online.epochsolutions.mafaro.dtos.patron.UpdatePatronRequest;
-import online.epochsolutions.mafaro.services.PatronService;
+import online.epochsolutions.mafaro.authentication.PatronService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

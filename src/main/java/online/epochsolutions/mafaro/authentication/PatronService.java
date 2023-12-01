@@ -1,4 +1,4 @@
-package online.epochsolutions.mafaro.services;
+package online.epochsolutions.mafaro.authentication;
 
 import lombok.RequiredArgsConstructor;
 import online.epochsolutions.mafaro.authentication.PasswordEncryptionService;

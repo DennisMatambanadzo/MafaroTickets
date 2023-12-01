@@ -21,11 +21,14 @@ public class BaseUser implements UserDetails {
 
     private Boolean emailVerified = false;
 
+    public Boolean isEmailVerified() {
+        return emailVerified;
+    }
 //    private List<VerificationToken> verificationTokens = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return role.getAuthorities();
     }
 
     @Override
