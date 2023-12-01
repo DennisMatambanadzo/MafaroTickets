@@ -1,4 +1,4 @@
-package online.epochsolutions.mafaro.services;
+package online.epochsolutions.mafaro.authentication;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;

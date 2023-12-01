@@ -6,12 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document
-public class Patron {
+public class Patron extends BaseUser{
 
     @Id
     private String id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String password;
+
 }

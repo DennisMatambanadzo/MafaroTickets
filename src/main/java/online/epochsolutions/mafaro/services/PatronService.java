@@ -1,6 +1,7 @@
 package online.epochsolutions.mafaro.services;
 
 import lombok.RequiredArgsConstructor;
+import online.epochsolutions.mafaro.authentication.PasswordEncryptionService;
 import online.epochsolutions.mafaro.dtos.patron.CreatePatronRequest;
 import online.epochsolutions.mafaro.dtos.patron.UpdatePatronRequest;
 import online.epochsolutions.mafaro.models.Patron;
