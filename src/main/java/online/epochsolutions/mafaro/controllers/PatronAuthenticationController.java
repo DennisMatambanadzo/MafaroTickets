@@ -1,14 +1,16 @@
 package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
+import online.epochsolutions.mafaro.authentication.PatronAccountService;
+import online.epochsolutions.mafaro.contracts.IAccountService;
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.common.LoginResponse;
 import online.epochsolutions.mafaro.dtos.patron.CreatePatronAccountResponse;
-import online.epochsolutions.mafaro.authentication.PatronAccountService;
 import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
 import online.epochsolutions.mafaro.exceptions.UserNotVerifiedException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/mafaro/patron")
 public class PatronAuthenticationController {
 
-    private final PatronAccountService patronService;
+
+
+    private final PatronAccountService accountService;
 
     @PostMapping("/registration")
     public ResponseEntity<CreatePatronAccountResponse> patronRegistration(@RequestBody CreateUserAccountRequest request) throws EmailFailureException, UserAccountAlreadyExistsException {
         try{
-            patronService.userRegistration(request);
+            accountService.userRegistration(request);
             CreatePatronAccountResponse response = new CreatePatronAccountResponse();
             response.setFirstName(request.getFirstName());
             response.setEmail(request.getEmail());
@@ -38,7 +42,7 @@ public class PatronAuthenticationController {
 
     @PostMapping("/verify")
     public ResponseEntity verifyEmail(@RequestParam String token){
-        if (patronService.verifyUser(token)){
+        if (accountService.verifyUser(token)){
             return ResponseEntity.ok().build();
         }else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -49,7 +53,7 @@ public class PatronAuthenticationController {
     public ResponseEntity<LoginResponse> userLogin(@RequestBody UserAccountLoginRequest request) throws UserNotVerifiedException, EmailFailureException {
         String jwt = null;
         try{
-            jwt = patronService.loginUser(request);
+            jwt = accountService.loginUser(request);
         } catch(UserNotVerifiedException e){
             var response = new LoginResponse();
             response.setSuccess(false);
@@ -65,7 +69,7 @@ public class PatronAuthenticationController {
         if(jwt == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else {
-            patronService.loginUser(request);
+            accountService.loginUser(request);
             LoginResponse loginResponse = new LoginResponse();
             loginResponse.setJwt(jwt);
             loginResponse.setSuccess(true);

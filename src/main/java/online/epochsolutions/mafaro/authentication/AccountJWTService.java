@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 @Service
-public class AccountJWTService implements AlgorithmKey {
+public class AccountJWTService {
     @Value("${jwt.algorithm.key}")
     private String algorithmKey;
     @Value("${jwt.issuer}")
@@ -24,7 +24,7 @@ public class AccountJWTService implements AlgorithmKey {
 
 
 
-    @Override
+
     @PostConstruct
     public void postConstruct(){
         algorithm = Algorithm.HMAC256(algorithmKey);
