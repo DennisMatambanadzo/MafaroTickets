@@ -5,23 +5,25 @@ import online.epochsolutions.mafaro.dtos.event.CreateEventRequest;
 import online.epochsolutions.mafaro.dtos.DeleteResponse;
 import online.epochsolutions.mafaro.dtos.event.UpdateEventRequest;
 import online.epochsolutions.mafaro.models.Event;
+import online.epochsolutions.mafaro.models.Host;
 import online.epochsolutions.mafaro.services.EventService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mafaro/events")
+@RequestMapping("/mafaro/admin/events")
 public class EventController {
 
     private final EventService eventService;
 
     @PostMapping("/createEvent")
-    public ResponseEntity<Event> createEvent(@RequestBody CreateEventRequest request){
+    public ResponseEntity<Event> createEvent(@RequestBody CreateEventRequest request, @AuthenticationPrincipal Host user){
 
-        return ResponseEntity.ok(eventService.createEvent(request));
+        return ResponseEntity.ok(eventService.createEvent(request,user));
     }
 
     @GetMapping("/listEvents")
@@ -39,9 +41,10 @@ public class EventController {
     }
 
     @DeleteMapping("/deleteEvent/{id}")
-    public ResponseEntity<DeleteResponse> deleteEvent( @PathVariable String id){
+    public ResponseEntity<DeleteResponse> deleteEvent( @PathVariable String id, @AuthenticationPrincipal Host user){
         DeleteResponse response = new DeleteResponse();
-        if (eventService.deleteEvent(id)){
+
+        if (eventService.deleteEvent(id,user)){
             response.setMessage("Event deleted");
         }else {
             response.setMessage("Delete failed! Event does not exist");

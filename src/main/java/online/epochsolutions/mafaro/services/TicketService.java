@@ -1,17 +1,19 @@
 package online.epochsolutions.mafaro.services;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.dtos.ticket.CreateTicketRequest;
+import online.epochsolutions.mafaro.authentication.EmailService;
+import online.epochsolutions.mafaro.authentication.JWTService;
+import online.epochsolutions.mafaro.dtos.ticket.CreateTicketsRequest;
+import online.epochsolutions.mafaro.exceptions.EmailFailureException;
+import online.epochsolutions.mafaro.models.Patron;
 import online.epochsolutions.mafaro.models.Ticket;
 import online.epochsolutions.mafaro.repos.EventRepository;
 import online.epochsolutions.mafaro.repos.TicketRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.OptionalLong;
+import java.util.*;
 
 
 @Service
@@ -20,26 +22,28 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
+    private final EmailService emailService;
+    private final JWTService jwtService;
 
-
-    public Boolean generateTicket(CreateTicketRequest request){
+    @Transactional
+    public List<Ticket> generateTicket(CreateTicketsRequest request, Patron patron) throws EmailFailureException {
 
         var opEvent = eventRepository.findById(request.getEventId());
 
-       if (opEvent.isPresent()){
+       if (opEvent.isPresent() && patron.getClass()== Patron.class){
            var event = opEvent.get();
            OptionalLong max = event.getSections()
                    .stream()
                    .filter(section -> Objects.equals(section.getName(), request.getSection()))
-                   .filter(section -> section.getAvailableSlots() > 0)
-                   .mapToLong((section) -> section.getAvailableSlots() - request.getNumberOfTickets())
+                   .filter(section -> section.getAvailableTicketSlots() > 0)
+                   .mapToLong((section) -> section.getAvailableTicketSlots() - request.getNumberOfTickets())
                    .max();
 
            if (max.isPresent() && max.getAsLong()>=0 ){
                event.getSections()
                        .stream()
                        .filter(section -> Objects.equals(section.getName(), request.getSection()))
-                       .forEach(section -> section.setAvailableSlots(max.getAsLong()));
+                       .forEach(section -> section.setAvailableTicketSlots(max.getAsLong()));
 
                eventRepository.save(event);
                var ticketList = new ArrayList<Ticket>();
@@ -52,16 +56,19 @@ public class TicketService {
                ticketList.forEach(s-> s.setName(event.getName()));
                ticketList.forEach(s-> s.setSection(request.getSection()));
                ticketList.forEach(s-> s.setStartTime(event.getStartTime()));
-               ticketList.forEach(s -> s.setCreatedAt(new Timestamp(System.currentTimeMillis())));
+               ticketList.forEach(s-> s.setPurchasedBy(patron.getEmail()));
+               ticketList.forEach(s-> s.setTicketToken(jwtService.generateTicketToken(s)));
+               ticketList.forEach(s-> s.setCreatedAt(new Timestamp(System.currentTimeMillis())));
 
-               ticketRepository.saveAll(ticketList);
+                ticketRepository.saveAll(ticketList);
+                emailService.sendTicketPurchaseEmail(ticketList,patron.getEmail());
+                return ticketList;
 
-               return true;
            }
 
        }
 
-        return false;
+        return new ArrayList<>();
 
     }
 

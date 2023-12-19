@@ -2,30 +2,30 @@ package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
 import online.epochsolutions.mafaro.dtos.common.LoginResponse;
-import online.epochsolutions.mafaro.dtos.user.CreateUserAccountRequest;
+import online.epochsolutions.mafaro.dtos.patron.CreatePatronAccountResponse;
+import online.epochsolutions.mafaro.dtos.patron.CreatePatronAccountRequest;
+import online.epochsolutions.mafaro.authentication.PatronAccountService;
 import online.epochsolutions.mafaro.dtos.user.CreateUserAccountResponse;
 import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
-import online.epochsolutions.mafaro.authentication.HostAccountService;
 import online.epochsolutions.mafaro.exceptions.UserNotVerifiedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/mafaro/admin/user")
 @RequiredArgsConstructor
-public class UserAuthenticationController {
+@RequestMapping("/mafaro/patron")
+public class PatronAuthenticationController {
 
-    private final HostAccountService userAccountService;
+    private final PatronAccountService patronService;
 
     @PostMapping("/registration")
-    public ResponseEntity<CreateUserAccountResponse> createUserAccount(@RequestBody CreateUserAccountRequest request) {
-
+    public ResponseEntity<CreatePatronAccountResponse> patronRegistration(@RequestBody CreatePatronAccountRequest request) throws EmailFailureException, UserAccountAlreadyExistsException {
         try{
-            userAccountService.createUser(request);
-            CreateUserAccountResponse response = new CreateUserAccountResponse();
+            patronService.patronRegistration(request);
+            CreatePatronAccountResponse response = new CreatePatronAccountResponse();
             response.setFirstName(request.getFirstName());
             response.setEmail(request.getEmail());
             response.setMessage(request.getFirstName() +", you have been registered with the email address: " + response.getEmail());
@@ -35,9 +35,11 @@ public class UserAuthenticationController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
+
+
     @PostMapping("/verify")
     public ResponseEntity verifyEmail(@RequestParam String token){
-        if (userAccountService.verifyUser(token)){
+        if (patronService.verifyUser(token)){
             return ResponseEntity.ok().build();
         }else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -46,9 +48,9 @@ public class UserAuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> userLogin(@RequestBody UserAccountLoginRequest request) throws UserNotVerifiedException, EmailFailureException {
-        String jwt;
+        String jwt = null;
         try{
-            jwt = userAccountService.loginUser(request);
+            jwt = patronService.loginUser(request);
         } catch(UserNotVerifiedException e){
             var response = new LoginResponse();
             response.setSuccess(false);
@@ -64,7 +66,7 @@ public class UserAuthenticationController {
         if(jwt == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else {
-            userAccountService.loginUser(request);
+            patronService.loginUser(request);
             LoginResponse loginResponse = new LoginResponse();
             loginResponse.setJwt(jwt);
             loginResponse.setSuccess(true);
@@ -72,5 +74,8 @@ public class UserAuthenticationController {
         }
     }
 
-    //TODO : Add logout feature
+//    @PutMapping("/updatePatron")
+//    public ResponseEntity<Boolean> updatePatron(@RequestBody UpdatePatronRequest request){
+//        return ResponseEntity.ok(patronService.updatePatron(request));
+//    }
 }

@@ -13,7 +13,7 @@ import static online.epochsolutions.mafaro.models.Permission.*;
 @AllArgsConstructor
 public enum Role {
 
-    USER(
+    PATRON(
             Set.of(
                     USER_CREATE,
                     USER_READ

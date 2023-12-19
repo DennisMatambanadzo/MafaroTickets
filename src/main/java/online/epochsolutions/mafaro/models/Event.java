@@ -1,5 +1,6 @@
 package online.epochsolutions.mafaro.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.bson.codecs.pojo.annotations.BsonId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,5 +20,7 @@ public class Event {
     private String eventDescription;
     private Integer ageLimit;
     private String location;
+    @JsonIgnore
+    private Host user;
     private ArrayList<Section> sections;
 }

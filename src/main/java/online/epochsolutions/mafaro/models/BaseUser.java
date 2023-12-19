@@ -1,7 +1,9 @@
 package online.epochsolutions.mafaro.models;
 
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 import online.epochsolutions.mafaro.authentication.VerificationToken;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,6 +15,8 @@ import java.util.List;
 public class BaseUser implements UserDetails {
     private String firstName;
     private String lastName;
+    @Email
+    @UniqueElements
     private String email;
     private String password;
 
@@ -24,7 +28,7 @@ public class BaseUser implements UserDetails {
     public Boolean isEmailVerified() {
         return emailVerified;
     }
-//    private List<VerificationToken> verificationTokens = new ArrayList<>();
+    private List<VerificationToken> verificationTokens = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

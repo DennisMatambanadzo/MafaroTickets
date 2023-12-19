@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import online.epochsolutions.mafaro.dtos.event.CreateEventRequest;
 import online.epochsolutions.mafaro.dtos.event.UpdateEventRequest;
 import online.epochsolutions.mafaro.models.Event;
+import online.epochsolutions.mafaro.models.Host;
 import online.epochsolutions.mafaro.repos.EventRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public Event createEvent(CreateEventRequest request) {
+    public Event createEvent(CreateEventRequest request, Host user) {
 
         Event event = new Event();
         event.setEventDescription(request.getEventDescription());
@@ -26,6 +27,7 @@ public class EventService {
         event.setStartTime(request.getStartTime());
         event.setAgeLimit(request.getAgeLimit());
         event.setSections(request.getSections());
+        event.setUser(user);
        return eventRepository.save(event);
     }
 
@@ -39,7 +41,7 @@ public class EventService {
         return opEvent.orElseGet(Event::new);
     }
 
-    public Boolean deleteEvent(String id){
+    public Boolean deleteEvent(String id, Host user){
         eventRepository.deleteById(id);
         return eventRepository.findById(id).isEmpty();
     }

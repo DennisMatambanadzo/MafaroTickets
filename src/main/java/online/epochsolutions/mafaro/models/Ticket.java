@@ -17,4 +17,6 @@ public class Ticket {
     private String section;
     private LocalDateTime startTime;
     private Timestamp createdAt;
+    private String purchasedBy;
+    private String TicketToken;
 }

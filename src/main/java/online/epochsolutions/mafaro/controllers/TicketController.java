@@ -1,26 +1,30 @@
 package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.dtos.ticket.CreateTicketRequest;
+import online.epochsolutions.mafaro.dtos.ticket.CreateTicketsRequest;
 import online.epochsolutions.mafaro.dtos.DeleteResponse;
+import online.epochsolutions.mafaro.exceptions.EmailFailureException;
+import online.epochsolutions.mafaro.models.Patron;
 import online.epochsolutions.mafaro.models.Ticket;
 import online.epochsolutions.mafaro.services.TicketService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mafaro/tickets")
+@RequestMapping("/mafaro/patron/tickets")
 public class TicketController {
 
     private final TicketService ticketService;
 
 
     @PostMapping("/purchaseTicket")
-    public ResponseEntity<Boolean> purchaseTicket(@RequestBody CreateTicketRequest request){
-       return ResponseEntity.ok( ticketService.generateTicket(request));
+    public ResponseEntity purchaseTicket(@RequestBody CreateTicketsRequest request, @AuthenticationPrincipal Patron patron) throws EmailFailureException {
+
+       return  ticketService.generateTicket(request,patron).isEmpty() ? ResponseEntity.internalServerError().build() : ResponseEntity.ok().build();
     }
 
     @GetMapping("/listTickets")

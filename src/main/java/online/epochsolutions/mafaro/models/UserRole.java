@@ -1,4 +1,4 @@
-//package online.epochsolutions.mafaro.models;
+package online.epochsolutions.mafaro.models;//package online.epochsolutions.mafaro.models;
 //
 //import lombok.AllArgsConstructor;
 //import lombok.Getter;

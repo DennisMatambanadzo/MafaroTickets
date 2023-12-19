@@ -6,7 +6,8 @@ import lombok.Data;
 public class Section {
 
     private String name;
-    private Long availableSlots;
+    private Long initialTicketSlots;
+    private Long availableTicketSlots;
     private Integer price;
 
 }
