@@ -1,6 +1,7 @@
 package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
+import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.common.LoginResponse;
 import online.epochsolutions.mafaro.dtos.patron.CreatePatronAccountResponse;
 import online.epochsolutions.mafaro.authentication.PatronAccountService;
@@ -20,7 +21,7 @@ public class PatronAuthenticationController {
     private final PatronAccountService patronService;
 
     @PostMapping("/registration")
-    public ResponseEntity<CreatePatronAccountResponse> patronRegistration(@RequestBody CreatePatronAccountRequest request) throws EmailFailureException, UserAccountAlreadyExistsException {
+    public ResponseEntity<CreatePatronAccountResponse> patronRegistration(@RequestBody CreateUserAccountRequest request) throws EmailFailureException, UserAccountAlreadyExistsException {
         try{
             patronService.userRegistration(request);
             CreatePatronAccountResponse response = new CreatePatronAccountResponse();
@@ -48,7 +49,7 @@ public class PatronAuthenticationController {
     public ResponseEntity<LoginResponse> userLogin(@RequestBody UserAccountLoginRequest request) throws UserNotVerifiedException, EmailFailureException {
         String jwt = null;
         try{
-            jwt = patronService.loginPatron(request);
+            jwt = patronService.loginUser(request);
         } catch(UserNotVerifiedException e){
             var response = new LoginResponse();
             response.setSuccess(false);
@@ -64,7 +65,7 @@ public class PatronAuthenticationController {
         if(jwt == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else {
-            patronService.loginPatron(request);
+            patronService.loginUser(request);
             LoginResponse loginResponse = new LoginResponse();
             loginResponse.setJwt(jwt);
             loginResponse.setSuccess(true);
