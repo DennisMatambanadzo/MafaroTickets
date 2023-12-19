@@ -1,7 +1,8 @@
 package online.epochsolutions.mafaro.authentication;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.dtos.patron.CreatePatronAccountRequest;
+import online.epochsolutions.mafaro.contracts.IAccountService;
+import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
@@ -21,15 +22,15 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PatronAccountService {
+public class PatronAccountService implements IAccountService {
 
     private final PatronAccountRepository patronRepository;
     private final PasswordEncryptionService passwordEncryptionService;
-    private final EmailService emailService;
+    private final AccountVerificationEmailService accountVerificationEmailService;
     private final VerificationTokenRepository verificationTokenRepository;
-    private final JWTService jwtService;
+    private final AccountJWTService accountJwtService;
 
-    public void patronRegistration(CreatePatronAccountRequest request) throws UserAccountAlreadyExistsException, EmailFailureException {
+    public void userRegistration(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException, EmailFailureException {
         checkUser(request);
         var user = new Patron();
 
@@ -39,14 +40,14 @@ public class PatronAccountService {
         user.setRole(Role.PATRON);
         user.setPassword(passwordEncryptionService.encryptPassword(request.getPassword()));
         VerificationToken verificationToken = createVerificationToken(user);
-        emailService.sendVerificationEmail(verificationToken);
+        accountVerificationEmailService.sendVerificationEmail(verificationToken);
         verificationTokenRepository.save(verificationToken);
         patronRepository.save(user);
     }
 
     private VerificationToken createVerificationToken(BaseUser user) {
         VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(jwtService.generateBaseUserJWT(user));
+        verificationToken.setToken(accountJwtService.generateBaseUserJWT(user));
         verificationToken.setUser(user);
         verificationToken.setEmail(user.getEmail());
         verificationToken.setCreatedTimestamp(new Date(System.currentTimeMillis()));
@@ -59,7 +60,7 @@ public class PatronAccountService {
             Patron user = opUser.get();
             if (passwordEncryptionService.verifyPassword(request.getPassword(), user.getPassword())){
                 if (user.isEmailVerified()){
-                    return jwtService.generateBaseUserJWT(user);
+                    return accountJwtService.generateBaseUserJWT(user);
                 }else {
                     List<VerificationToken> verificationTokens = user.getVerificationTokens();
                     boolean resend = verificationTokens.isEmpty() ||
@@ -67,7 +68,7 @@ public class PatronAccountService {
                     if (resend) {
                         VerificationToken verificationToken = createVerificationToken(user);
                         verificationTokenRepository.save(verificationToken);
-                        emailService.sendVerificationEmail(verificationToken);
+                        accountVerificationEmailService.sendVerificationEmail(verificationToken);
                     }
                     throw new UserNotVerifiedException(resend);
 
@@ -93,7 +94,7 @@ public class PatronAccountService {
         return false;
     }
 
-    private void checkUser(CreatePatronAccountRequest request) throws UserAccountAlreadyExistsException {
+    private void checkUser(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException {
         if(patronRepository.findByEmailIgnoreCase(request.getEmail()).isPresent()){
 
             throw new UserAccountAlreadyExistsException();

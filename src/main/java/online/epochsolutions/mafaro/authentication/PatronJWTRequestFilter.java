@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PatronJWTRequestFilter extends OncePerRequestFilter {
 
-    private final JWTService jwtService;
+    private final AccountJWTService accountJwtService;
     private final PatronAccountRepository accountRepository;
 
 
@@ -31,7 +31,7 @@ public class PatronJWTRequestFilter extends OncePerRequestFilter {
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")){
             String token = tokenHeader.substring(7);
             try{
-                String email = jwtService.getEmail(token);
+                String email = accountJwtService.getEmail(token);
                 Optional<Patron> opUser = accountRepository.findByEmailIgnoreCase(email);
                 if (opUser.isPresent()){
                     Patron patron = opUser.get();

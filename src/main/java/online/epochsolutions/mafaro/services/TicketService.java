@@ -1,8 +1,7 @@
 package online.epochsolutions.mafaro.services;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.authentication.EmailService;
-import online.epochsolutions.mafaro.authentication.JWTService;
+import online.epochsolutions.mafaro.contracts.ITicketService;
 import online.epochsolutions.mafaro.dtos.ticket.CreateTicketsRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.models.Patron;
@@ -18,13 +17,14 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class TicketService {
+public class TicketService implements ITicketService {
 
     private final TicketRepository ticketRepository;
     private final EventRepository eventRepository;
-    private final EmailService emailService;
-    private final JWTService jwtService;
+    private final TicketPurchaseNotificationEmailService emailService;
+    private final TicketJWTService ticketJWTService;
 
+    @Override
     @Transactional
     public List<Ticket> generateTicket(CreateTicketsRequest request, Patron patron) throws EmailFailureException {
 
@@ -57,39 +57,37 @@ public class TicketService {
                ticketList.forEach(s-> s.setSection(request.getSection()));
                ticketList.forEach(s-> s.setStartTime(event.getStartTime()));
                ticketList.forEach(s-> s.setPurchasedBy(patron.getEmail()));
-               ticketList.forEach(s-> s.setTicketToken(jwtService.generateTicketToken(s)));
+               ticketList.forEach(s-> s.setTicketToken(ticketJWTService.generateTicketToken(s)));
                ticketList.forEach(s-> s.setCreatedAt(new Timestamp(System.currentTimeMillis())));
 
                 ticketRepository.saveAll(ticketList);
                 emailService.sendTicketPurchaseEmail(ticketList,patron.getEmail());
                 return ticketList;
-
            }
-
        }
-
         return new ArrayList<>();
-
     }
 
 
-
-
+    @Override
     public List<Ticket> fetchAllTickets() {
         return ticketRepository.findAll();
     }
 
+    @Override
     public Ticket getTicket(String id) {
 
         var opTicket = ticketRepository.findById(id);
         return opTicket.orElseGet(Ticket::new);
     }
 
+    @Override
     public boolean destroyTicket(String id) {
         ticketRepository.deleteById(id);
         return ticketRepository.findById(id).isEmpty();
     }
 
+    @Override
     public void checkEventAttributes(){
 
     }

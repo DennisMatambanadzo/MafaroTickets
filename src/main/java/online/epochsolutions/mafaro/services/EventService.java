@@ -1,6 +1,7 @@
 package online.epochsolutions.mafaro.services;
 
 import lombok.RequiredArgsConstructor;
+import online.epochsolutions.mafaro.contracts.IEventService;
 import online.epochsolutions.mafaro.dtos.event.CreateEventRequest;
 import online.epochsolutions.mafaro.dtos.event.UpdateEventRequest;
 import online.epochsolutions.mafaro.models.Event;
@@ -13,10 +14,11 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class EventService {
+public class EventService implements IEventService {
 
     private final EventRepository eventRepository;
 
+    @Override
     public Event createEvent(CreateEventRequest request, Host user) {
 
         Event event = new Event();
@@ -31,22 +33,26 @@ public class EventService {
        return eventRepository.save(event);
     }
 
+    @Override
     public List<Event> fetchAllEvents(){
         return eventRepository.findAll();
     }
 
+    @Override
     public Event getEvent(String id) {
 
         var opEvent = eventRepository.findById(id);
         return opEvent.orElseGet(Event::new);
     }
 
+    @Override
     public Boolean deleteEvent(String id, Host user){
         eventRepository.deleteById(id);
         return eventRepository.findById(id).isEmpty();
     }
 
-    public Event updateEvent(UpdateEventRequest request,String id) {
+    @Override
+    public Event updateEvent(UpdateEventRequest request, String id) {
 
         var opEvent = eventRepository.findById(id).get();
 

@@ -1,5 +1,6 @@
 package online.epochsolutions.mafaro.authentication;
 
+import online.epochsolutions.mafaro.contracts.GenerateSimpleMailMessage;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.models.Ticket;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Service
-public class EmailService {
+public class AccountVerificationEmailService implements GenerateSimpleMailMessage {
 
     @Value("${email.from}")
     private String fromMessage;
@@ -22,15 +23,10 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
 
-    public EmailService(JavaMailSender javaMailSender) {
+    public AccountVerificationEmailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
-    private SimpleMailMessage makeMailMessage(){
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom(fromMessage);
-        return simpleMailMessage;
-    }
     public void sendVerificationEmail(VerificationToken verificationToken) throws EmailFailureException {
         SimpleMailMessage message = makeMailMessage();
         message.setTo(verificationToken.getEmail());
@@ -44,17 +40,4 @@ public class EmailService {
         }
     }
 
-
-
-    public void sendTicketPurchaseEmail(List<Ticket> ticketList, String patronEmail) throws EmailFailureException {
-        SimpleMailMessage message = makeMailMessage();
-        message.setTo(patronEmail);
-        message.setSubject("Ticket Purchase Successful");
-        message.setText("Your ticket purchase was successful. You have bought, " + ticketList.size() + " tickets!");
-        try{
-            javaMailSender.send(message);
-        }catch(MailException exception){
-            throw new EmailFailureException();
-        }
-    }
 }

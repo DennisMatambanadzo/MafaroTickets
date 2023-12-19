@@ -1,7 +1,8 @@
 package online.epochsolutions.mafaro.authentication;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.dtos.user.CreateUserAccountRequest;
+import online.epochsolutions.mafaro.contracts.IAccountService;
+import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
@@ -21,15 +22,16 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class HostAccountService {
+public class HostAccountService implements IAccountService {
 
     private final HostAccountRepository hostAccountRepository;
     private final PasswordEncryptionService passwordEncryptionService;
-    private final EmailService emailService;
+    private final AccountVerificationEmailService accountVerificationEmailService;
     private final VerificationTokenRepository verificationTokenRepository;
-    private final JWTService jwtService;
+    private final AccountJWTService accountJwtService;
 
-    public void createUser(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException, EmailFailureException {
+    @Override
+    public void userRegistration(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException, EmailFailureException {
             checkUser(request);
             var user = new Host();
 
@@ -39,27 +41,28 @@ public class HostAccountService {
             user.setRole(Role.HOST);
             user.setPassword(passwordEncryptionService.encryptPassword(request.getPassword()));
             VerificationToken verificationToken = createVerificationToken(user);
-            emailService.sendVerificationEmail(verificationToken);
+            accountVerificationEmailService.sendVerificationEmail(verificationToken);
             verificationTokenRepository.save(verificationToken);
             hostAccountRepository.save(user);
     }
 
     private VerificationToken createVerificationToken(Host user) {
         VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(jwtService.generateBaseUserJWT(user));
+        verificationToken.setToken(accountJwtService.generateBaseUserJWT(user));
         verificationToken.setUser(user);
         verificationToken.setEmail(user.getEmail());
         verificationToken.setCreatedTimestamp(new Date(System.currentTimeMillis()));
         return verificationToken;
     }
 
+    @Override
     public String loginUser(UserAccountLoginRequest request) throws EmailFailureException, UserNotVerifiedException {
         Optional<Host> opUser = hostAccountRepository.findByEmailIgnoreCase(request.getEmail());
         if (opUser.isPresent()){
             Host user = opUser.get();
             if (passwordEncryptionService.verifyPassword(request.getPassword(), user.getPassword())){
                 if (user.isEmailVerified()){
-                    return jwtService.generateBaseUserJWT(user);
+                    return accountJwtService.generateBaseUserJWT(user);
                 }else {
                     List<VerificationToken> verificationTokens = user.getVerificationTokens();
                     boolean resend = verificationTokens.isEmpty() ||
@@ -67,7 +70,7 @@ public class HostAccountService {
                     if (resend) {
                         VerificationToken verificationToken = createVerificationToken(user);
                         verificationTokenRepository.save(verificationToken);
-                        emailService.sendVerificationEmail(verificationToken);
+                        accountVerificationEmailService.sendVerificationEmail(verificationToken);
                     }
                     throw new UserNotVerifiedException(resend);
 
@@ -77,6 +80,7 @@ public class HostAccountService {
         return null;
     }
 
+    @Override
     @Transactional
     public boolean verifyUser(String token){
         Optional<VerificationToken> opToken = verificationTokenRepository.findByToken(token);

@@ -1,13 +1,13 @@
 package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
+import online.epochsolutions.mafaro.contracts.IAccountService;
 import online.epochsolutions.mafaro.dtos.common.LoginResponse;
-import online.epochsolutions.mafaro.dtos.user.CreateUserAccountRequest;
+import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.user.CreateUserAccountResponse;
 import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
-import online.epochsolutions.mafaro.authentication.HostAccountService;
 import online.epochsolutions.mafaro.exceptions.UserNotVerifiedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserAuthenticationController {
 
-    private final HostAccountService userAccountService;
+    private final IAccountService userAccountService;
 
     @PostMapping("/registration")
     public ResponseEntity<CreateUserAccountResponse> createUserAccount(@RequestBody CreateUserAccountRequest request) {
 
         try{
-            userAccountService.createUser(request);
+            userAccountService.userRegistration(request);
             CreateUserAccountResponse response = new CreateUserAccountResponse();
             response.setFirstName(request.getFirstName());
             response.setEmail(request.getEmail());

@@ -20,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserJWTRequestFilter extends OncePerRequestFilter {
 
-    private final JWTService jwtService;
+    private final AccountJWTService accountJwtService;
     private final HostAccountRepository accountRepository;
 
 
@@ -31,7 +31,7 @@ public class UserJWTRequestFilter extends OncePerRequestFilter {
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")){
             String token = tokenHeader.substring(7);
             try{
-                String email = jwtService.getEmail(token);
+                String email = accountJwtService.getEmail(token);
                 Optional<Host> opUser = accountRepository.findByEmailIgnoreCase(email);
                 if (opUser.isPresent()){
                     Host user = opUser.get();

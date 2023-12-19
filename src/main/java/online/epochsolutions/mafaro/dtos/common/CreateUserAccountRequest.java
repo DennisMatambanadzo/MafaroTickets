@@ -1,10 +1,9 @@
-package online.epochsolutions.mafaro.dtos.patron;
+package online.epochsolutions.mafaro.dtos.common;
 
 import lombok.Data;
 
 @Data
-public class CreatePatronAccountRequest {
-
+public class CreateUserAccountRequest {
     private String firstName;
     private String lastName;
     private String email;
