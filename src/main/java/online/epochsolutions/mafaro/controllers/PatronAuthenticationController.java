@@ -2,15 +2,13 @@ package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
 import online.epochsolutions.mafaro.authentication.PatronAccountService;
-import online.epochsolutions.mafaro.contracts.IAccountService;
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.common.LoginResponse;
 import online.epochsolutions.mafaro.dtos.patron.CreatePatronAccountResponse;
-import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
+import online.epochsolutions.mafaro.dtos.host.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
 import online.epochsolutions.mafaro.exceptions.UserNotVerifiedException;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -18,14 +18,12 @@ import static org.mockito.Mockito.verify;
 
 class AccountJWTServiceTest {
 
-    public static final int expiry = 604800;
     @Mock
     private AccountJWTService accountJWTService;
 
+    public static final int expiry = 604800;
     String bigKey = "BigKey";
     Algorithm algorithm = Algorithm.HMAC256(bigKey);
-
-
     String mafaro = "mafaro";
 
     @BeforeEach
@@ -69,7 +67,7 @@ class AccountJWTServiceTest {
         user.setRole(Role.HOST);
         user.setPassword("password");
 
-        String token = accountJWTService.generateBaseUserJWT(user);
+         String token = accountJWTService.generateBaseUserJWT(user);
 
         assertThat(accountJWTService.getEmail(token)).isEqualTo("test@test.com");
 

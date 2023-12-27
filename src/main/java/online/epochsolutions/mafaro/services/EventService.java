@@ -22,14 +22,14 @@ public class EventService implements IEventService {
     public Event createEvent(CreateEventRequest request, Host user) {
 
         Event event = new Event();
-        event.setEventDescription(request.getEventDescription());
+        event.setDescription(request.getDescription());
         event.setName(request.getName());
-        event.setLocation(request.getLocation());
+        event.setVenue(request.getVenue());
         event.setEndTime(request.getEndTime());
         event.setStartTime(request.getStartTime());
         event.setAgeLimit(request.getAgeLimit());
         event.setSections(request.getSections());
-        event.setUser(user);
+        event.setCreatedBy(user);
        return eventRepository.save(event);
     }
 
@@ -73,7 +73,7 @@ public class EventService implements IEventService {
         }
 
         if(Objects.nonNull(request.getLocation()) && !"".equalsIgnoreCase(request.getLocation())){
-            opEvent.setLocation(request.getLocation());
+            opEvent.setVenue(request.getLocation());
         }
 
 

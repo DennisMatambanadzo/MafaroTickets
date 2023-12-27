@@ -1,4 +1,4 @@
-package online.epochsolutions.mafaro.dtos.user;
+package online.epochsolutions.mafaro.dtos.host;
 
 import lombok.Data;
 

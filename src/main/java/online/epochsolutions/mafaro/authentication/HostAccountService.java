@@ -3,7 +3,7 @@ package online.epochsolutions.mafaro.authentication;
 import lombok.RequiredArgsConstructor;
 import online.epochsolutions.mafaro.contracts.IAccountService;
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
-import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
+import online.epochsolutions.mafaro.dtos.host.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
 import online.epochsolutions.mafaro.exceptions.UserNotVerifiedException;
@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class HostAccountService implements IAccountService {
+public class HostAccountService implements IAccountService{
 
     private final HostAccountRepository hostAccountRepository;
     private final PasswordEncryptionService passwordEncryptionService;
@@ -33,6 +33,7 @@ public class HostAccountService implements IAccountService {
     @Override
     public void userRegistration(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException, EmailFailureException {
             checkUser(request);
+
             var user = new Host();
 
             user.setEmail(request.getEmail());
@@ -44,15 +45,6 @@ public class HostAccountService implements IAccountService {
             accountVerificationEmailService.sendVerificationEmail(verificationToken);
             verificationTokenRepository.save(verificationToken);
             hostAccountRepository.save(user);
-    }
-
-    private VerificationToken createVerificationToken(Host user) {
-        VerificationToken verificationToken = new VerificationToken();
-        verificationToken.setToken(accountJwtService.generateBaseUserJWT(user));
-        verificationToken.setUser(user);
-        verificationToken.setEmail(user.getEmail());
-        verificationToken.setCreatedTimestamp(new Date(System.currentTimeMillis()));
-        return verificationToken;
     }
 
     @Override
@@ -97,8 +89,20 @@ public class HostAccountService implements IAccountService {
         return false;
     }
 
-    private void checkUser(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException {
-        if(hostAccountRepository.findByEmailIgnoreCase(request.getEmail()).isPresent()){
+
+//    @Override
+    public VerificationToken createVerificationToken(Host user) {
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setToken(accountJwtService.generateBaseUserJWT(user));
+        verificationToken.setUser(user);
+        verificationToken.setEmail(user.getEmail());
+        verificationToken.setCreatedTimestamp(new Date(System.currentTimeMillis()));
+        return verificationToken;
+    }
+
+    @Override
+    public void checkUser(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException {
+        if (hostAccountRepository.findByEmailIgnoreCase(request.getEmail()).isPresent()) {
 
             throw new UserAccountAlreadyExistsException();
         }

@@ -11,4 +11,9 @@ public class Host extends BaseUser{
     @Id
     private String id;
 
+    private String fullLegalName;
+    private String IDNumber;
+    private String contactEmail;
+    private String phoneNumber;
+
 }

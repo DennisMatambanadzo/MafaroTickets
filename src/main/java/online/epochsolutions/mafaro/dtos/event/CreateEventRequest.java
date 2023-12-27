@@ -11,9 +11,9 @@ public class CreateEventRequest {
     private String name;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private String eventDescription;
+    private String description;
     private Integer ageLimit;
-    private String location;
+    private String venue;
     private ArrayList<Section> sections;
 
 }

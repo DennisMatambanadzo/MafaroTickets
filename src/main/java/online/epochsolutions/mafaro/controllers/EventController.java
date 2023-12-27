@@ -7,6 +7,7 @@ import online.epochsolutions.mafaro.dtos.event.UpdateEventRequest;
 import online.epochsolutions.mafaro.models.Event;
 import online.epochsolutions.mafaro.models.Host;
 import online.epochsolutions.mafaro.contracts.IEventService;
+import online.epochsolutions.mafaro.services.EventService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequestMapping("/mafaro/admin/events")
 public class EventController {
 
-    private final IEventService IEventService;
+    private final EventService IEventService;
 
     @PostMapping("/createEvent")
     public ResponseEntity<Event> createEvent(@RequestBody CreateEventRequest request, @AuthenticationPrincipal Host user){

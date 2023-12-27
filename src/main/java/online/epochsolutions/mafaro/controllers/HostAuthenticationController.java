@@ -2,11 +2,10 @@ package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
 import online.epochsolutions.mafaro.authentication.PatronAccountService;
-import online.epochsolutions.mafaro.contracts.IAccountService;
 import online.epochsolutions.mafaro.dtos.common.LoginResponse;
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
-import online.epochsolutions.mafaro.dtos.user.CreateUserAccountResponse;
-import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
+import online.epochsolutions.mafaro.dtos.host.CreateUserAccountResponse;
+import online.epochsolutions.mafaro.dtos.host.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
 import online.epochsolutions.mafaro.exceptions.UserNotVerifiedException;

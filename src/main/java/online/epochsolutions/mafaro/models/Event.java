@@ -17,10 +17,15 @@ public class Event {
     private String name;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private String eventDescription;
+    private String description;
     private Integer ageLimit;
-    private String location;
+    private String venue;
+    private String salesPitch;
+    private String performers;
+    private String category;
+ /*   private String image;
+    private String logo;*/
     @JsonIgnore
-    private Host user;
+    private Host createdBy;
     private ArrayList<Section> sections;
 }

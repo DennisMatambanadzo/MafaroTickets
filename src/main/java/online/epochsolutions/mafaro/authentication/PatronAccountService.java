@@ -3,7 +3,7 @@ package online.epochsolutions.mafaro.authentication;
 import lombok.RequiredArgsConstructor;
 import online.epochsolutions.mafaro.contracts.IAccountService;
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
-import online.epochsolutions.mafaro.dtos.user.UserAccountLoginRequest;
+import online.epochsolutions.mafaro.dtos.host.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
 import online.epochsolutions.mafaro.exceptions.UserNotVerifiedException;
@@ -94,7 +94,7 @@ public class PatronAccountService implements IAccountService {
         return false;
     }
 
-    private void checkUser(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException {
+    public void checkUser(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException {
         if(patronRepository.findByEmailIgnoreCase(request.getEmail()).isPresent()){
 
             throw new UserAccountAlreadyExistsException();
