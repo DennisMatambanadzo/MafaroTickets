@@ -1,7 +1,6 @@
 package online.epochsolutions.mafaro.authentication;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.contracts.IAccountService;
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.host.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
@@ -22,7 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class PatronAccountService implements IAccountService {
+public class PatronAccountService  {
 
     private final PatronAccountRepository patronRepository;
     private final PasswordEncryptionService passwordEncryptionService;

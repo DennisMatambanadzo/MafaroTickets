@@ -15,6 +15,7 @@ import static online.epochsolutions.mafaro.authentication.AccountJWTService.ROLE
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class AccountJWTServiceTest {
 
@@ -53,6 +54,8 @@ class AccountJWTServiceTest {
                 .withExpiresAt(new Date(System.currentTimeMillis() + (1000 + expiry)))
                 .withIssuer(mafaro)
                 .sign(algorithm);
+
+
 
 
         assertThat(token).startsWith("ey");

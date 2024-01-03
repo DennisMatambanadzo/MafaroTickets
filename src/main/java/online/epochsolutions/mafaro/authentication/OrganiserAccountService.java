@@ -1,15 +1,15 @@
 package online.epochsolutions.mafaro.authentication;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.contracts.IAccountService;
+import online.epochsolutions.mafaro.contracts.IOrganiserAccountService;
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.host.UserAccountLoginRequest;
 import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
 import online.epochsolutions.mafaro.exceptions.UserNotVerifiedException;
 import online.epochsolutions.mafaro.models.Role;
-import online.epochsolutions.mafaro.models.Host;
-import online.epochsolutions.mafaro.repos.HostAccountRepository;
+import online.epochsolutions.mafaro.models.Organiser;
+import online.epochsolutions.mafaro.repos.OrganiserAccountRepository;
 import online.epochsolutions.mafaro.repos.VerificationTokenRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +19,11 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 @RequiredArgsConstructor
-public class HostAccountService implements IAccountService{
+public class OrganiserAccountService implements IOrganiserAccountService {
 
-    private final HostAccountRepository hostAccountRepository;
+    private final OrganiserAccountRepository organiserAccountRepository;
     private final PasswordEncryptionService passwordEncryptionService;
     private final AccountVerificationEmailService accountVerificationEmailService;
     private final VerificationTokenRepository verificationTokenRepository;
@@ -34,7 +33,7 @@ public class HostAccountService implements IAccountService{
     public void userRegistration(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException, EmailFailureException {
             checkUser(request);
 
-            var user = new Host();
+            var user = new Organiser();
 
             user.setEmail(request.getEmail());
             user.setLastName(request.getLastName());
@@ -44,14 +43,14 @@ public class HostAccountService implements IAccountService{
             VerificationToken verificationToken = createVerificationToken(user);
             accountVerificationEmailService.sendVerificationEmail(verificationToken);
             verificationTokenRepository.save(verificationToken);
-            hostAccountRepository.save(user);
+            organiserAccountRepository.save(user);
     }
 
     @Override
     public String loginUser(UserAccountLoginRequest request) throws EmailFailureException, UserNotVerifiedException {
-        Optional<Host> opUser = hostAccountRepository.findByEmailIgnoreCase(request.getEmail());
+        Optional<Organiser> opUser = organiserAccountRepository.findByEmailIgnoreCase(request.getEmail());
         if (opUser.isPresent()){
-            Host user = opUser.get();
+            Organiser user = opUser.get();
             if (passwordEncryptionService.verifyPassword(request.getPassword(), user.getPassword())){
                 if (user.isEmailVerified()){
                     return accountJwtService.generateBaseUserJWT(user);
@@ -78,10 +77,10 @@ public class HostAccountService implements IAccountService{
         Optional<VerificationToken> opToken = verificationTokenRepository.findByToken(token);
         if (opToken.isPresent()){
             String email = opToken.get().getUser().getEmail();
-            var user = hostAccountRepository.findByEmailIgnoreCase(email).get();
+            var user = organiserAccountRepository.findByEmailIgnoreCase(email).get();
             if (!user.isEmailVerified()){
                 user.setEmailVerified(true);
-                hostAccountRepository.save(user);
+                organiserAccountRepository.save(user);
                 verificationTokenRepository.deleteVerificationTokenByUserEmail(user.getEmail());
                 return true;
             }
@@ -91,7 +90,7 @@ public class HostAccountService implements IAccountService{
 
 
 //    @Override
-    public VerificationToken createVerificationToken(Host user) {
+    public VerificationToken createVerificationToken(Organiser user) {
         VerificationToken verificationToken = new VerificationToken();
         verificationToken.setToken(accountJwtService.generateBaseUserJWT(user));
         verificationToken.setUser(user);
@@ -102,7 +101,7 @@ public class HostAccountService implements IAccountService{
 
     @Override
     public void checkUser(CreateUserAccountRequest request) throws UserAccountAlreadyExistsException {
-        if (hostAccountRepository.findByEmailIgnoreCase(request.getEmail()).isPresent()) {
+        if (organiserAccountRepository.findByEmailIgnoreCase(request.getEmail()).isPresent()) {
 
             throw new UserAccountAlreadyExistsException();
         }

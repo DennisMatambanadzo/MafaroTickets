@@ -1,12 +1,10 @@
 package online.epochsolutions.mafaro.authentication;
 
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
-import online.epochsolutions.mafaro.exceptions.EmailFailureException;
 import online.epochsolutions.mafaro.exceptions.UserAccountAlreadyExistsException;
-import online.epochsolutions.mafaro.models.BaseUser;
-import online.epochsolutions.mafaro.models.Host;
+import online.epochsolutions.mafaro.models.Organiser;
 import online.epochsolutions.mafaro.models.Role;
-import online.epochsolutions.mafaro.repos.HostAccountRepository;
+import online.epochsolutions.mafaro.repos.OrganiserAccountRepository;
 import online.epochsolutions.mafaro.repos.VerificationTokenRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,16 +16,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Date;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class HostAccountServiceTest {
+class OrganiserAccountServiceTest {
 
 
 
     @Mock
-    private HostAccountRepository hostAccountRepository;
+    private OrganiserAccountRepository organiserAccountRepository;
     @Mock
     private PasswordEncryptionService passwordEncryptionService;
     @Mock
@@ -39,10 +36,10 @@ class HostAccountServiceTest {
 
 
     @InjectMocks
-    private HostAccountService underTest;
+    private OrganiserAccountService underTest;
     @BeforeEach
     void setUp() {
-        underTest = new HostAccountService(hostAccountRepository,
+        underTest = new OrganiserAccountService(organiserAccountRepository,
                 passwordEncryptionService,
                 accountVerificationEmailService,
                 verificationTokenRepository,
@@ -52,7 +49,7 @@ class HostAccountServiceTest {
 
     @Test
     void userRegistration() {
-        Host user = new Host();
+        Organiser user = new Organiser();
         user.setEmail("test@test.com");
         user.setPassword(passwordEncryptionService.encryptPassword("password"));
         user.setFirstName("test");
@@ -79,7 +76,7 @@ class HostAccountServiceTest {
 
 //        assertThat(hostAccountRepository.save(user)).isInstanceOfAny(BaseUser.class);
 
-        verify(hostAccountRepository).save(user);
+        verify(organiserAccountRepository).save(user);
     }
 
     @Test
@@ -93,7 +90,7 @@ class HostAccountServiceTest {
     @Test
     void createVerificationToken() {
 
-        Host user = new Host();
+        Organiser user = new Organiser();
         user.setId("1");
         user.setContactEmail("test@test.com");
         user.setFullLegalName("Test Testor");
@@ -122,6 +119,6 @@ class HostAccountServiceTest {
 
         underTest.checkUser(request);
 
-        verify(hostAccountRepository).findByEmailIgnoreCase(request.getEmail());
+        verify(organiserAccountRepository).findByEmailIgnoreCase(request.getEmail());
     }
 }

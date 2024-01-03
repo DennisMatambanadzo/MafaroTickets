@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document
-public class Host extends BaseUser{
+public class Organiser extends BaseUser{
 
     @Id
     private String id;

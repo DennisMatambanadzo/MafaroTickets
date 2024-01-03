@@ -26,6 +26,6 @@ public class Event {
  /*   private String image;
     private String logo;*/
     @JsonIgnore
-    private Host createdBy;
+    private Organiser createdBy;
     private ArrayList<Section> sections;
 }

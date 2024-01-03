@@ -1,7 +1,7 @@
 package online.epochsolutions.mafaro.repos;
 
 import online.epochsolutions.mafaro.authentication.VerificationToken;
-import online.epochsolutions.mafaro.models.Host;
+import online.epochsolutions.mafaro.models.Organiser;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ public interface VerificationTokenRepository extends CrudRepository<Verification
     Optional<VerificationToken> findByToken(String token);
     Optional<VerificationToken> findByUserEmail(String email);
 
-    void deleteVerificationTokenByUser(Host user);
+    void deleteVerificationTokenByUser(Organiser user);
 
     void deleteVerificationTokenByUserEmail(String userEmail);
 }

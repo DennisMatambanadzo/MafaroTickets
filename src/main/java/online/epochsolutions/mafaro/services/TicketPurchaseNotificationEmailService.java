@@ -21,7 +21,8 @@ public class TicketPurchaseNotificationEmailService implements GenerateSimpleMai
         SimpleMailMessage message = makeMailMessage();
         message.setTo(patronEmail);
         message.setSubject("Ticket Purchase Successful");
-        message.setText("Your ticket purchase was successful. You have bought, " + ticketList.size() + " tickets!");
+
+        message.setText("Your ticket purchase was successful. You have bought, " + ticketList.size() + (ticketList.size() >1 ? " tickets": " ticket"));
         try{
             javaMailSender.send(message);
         }catch(MailException exception){

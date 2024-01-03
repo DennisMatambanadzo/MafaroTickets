@@ -1,7 +1,7 @@
 package online.epochsolutions.mafaro.controllers;
 
 import lombok.RequiredArgsConstructor;
-import online.epochsolutions.mafaro.authentication.PatronAccountService;
+import online.epochsolutions.mafaro.contracts.IOrganiserAccountService;
 import online.epochsolutions.mafaro.dtos.common.LoginResponse;
 import online.epochsolutions.mafaro.dtos.common.CreateUserAccountRequest;
 import online.epochsolutions.mafaro.dtos.host.CreateUserAccountResponse;
@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/mafaro/admin/user")
 @RequiredArgsConstructor
-public class HostAuthenticationController {
+public class OrganiserAuthenticationController {
 
 
-    private final PatronAccountService IAccountService;
+    private final IOrganiserAccountService organiserAccountService;
 
     @PostMapping("/registration")
     public ResponseEntity<CreateUserAccountResponse> createUserAccount(@RequestBody CreateUserAccountRequest request) {
 
         try{
-            IAccountService.userRegistration(request);
+            organiserAccountService.userRegistration(request);
             CreateUserAccountResponse response = new CreateUserAccountResponse();
             response.setFirstName(request.getFirstName());
             response.setEmail(request.getEmail());
@@ -38,7 +38,7 @@ public class HostAuthenticationController {
     }
     @PostMapping("/verify")
     public ResponseEntity verifyEmail(@RequestParam String token){
-        if (IAccountService.verifyUser(token)){
+        if (organiserAccountService.verifyUser(token)){
             return ResponseEntity.ok().build();
         }else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -49,7 +49,7 @@ public class HostAuthenticationController {
     public ResponseEntity<LoginResponse> userLogin(@RequestBody UserAccountLoginRequest request) throws UserNotVerifiedException, EmailFailureException {
         String jwt;
         try{
-            jwt = IAccountService.loginUser(request);
+            jwt = organiserAccountService.loginUser(request);
         } catch(UserNotVerifiedException e){
             var response = new LoginResponse();
             response.setSuccess(false);
@@ -65,7 +65,7 @@ public class HostAuthenticationController {
         if(jwt == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else {
-            IAccountService.loginUser(request);
+            organiserAccountService.loginUser(request);
             LoginResponse loginResponse = new LoginResponse();
             loginResponse.setJwt(jwt);
             loginResponse.setSuccess(true);

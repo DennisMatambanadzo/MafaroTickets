@@ -5,7 +5,7 @@ import online.epochsolutions.mafaro.contracts.IEventService;
 import online.epochsolutions.mafaro.dtos.event.CreateEventRequest;
 import online.epochsolutions.mafaro.dtos.event.UpdateEventRequest;
 import online.epochsolutions.mafaro.models.Event;
-import online.epochsolutions.mafaro.models.Host;
+import online.epochsolutions.mafaro.models.Organiser;
 import online.epochsolutions.mafaro.repos.EventRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +14,15 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+
 public class EventService implements IEventService {
 
     private final EventRepository eventRepository;
 
+
+
     @Override
-    public Event createEvent(CreateEventRequest request, Host user) {
+    public Event createEvent(CreateEventRequest request, Organiser user) {
 
         Event event = new Event();
         event.setDescription(request.getDescription());
@@ -46,7 +49,7 @@ public class EventService implements IEventService {
     }
 
     @Override
-    public Boolean deleteEvent(String id, Host user){
+    public Boolean deleteEvent(String id, Organiser user){
         eventRepository.deleteById(id);
         return eventRepository.findById(id).isEmpty();
     }
