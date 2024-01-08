@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -64,6 +65,21 @@ class EventServiceTest {
 
         assertThat(events).isNotEmpty();
         assertThat(events.size()).isEqualTo(2);
+
+    }
+
+    @Test
+    void EventService_getEvent_ReturnEvent(){
+        var event1 = new Event();
+        String id = "12345";
+        event1.setId(id);
+        event1.setName("Event1");
+
+        when(eventRepository.findById(id)).thenReturn(Optional.of(event1));
+
+        Event event = eventService.getEvent(id);
+
+        assertThat(event.getName()).isEqualTo("Event1");
 
     }
 
