@@ -46,6 +46,26 @@ class EventServiceTest {
         assertThat(event1).isNotNull();
     }
 
+    @Test
+    void EventService_FetchAllEvents_ReturnEvents(){
+
+        var event1 = new Event();
+        event1.setName("Event1");
+        var event2 = new Event();
+        event2.setName("Event1");
+
+        var eventList = new ArrayList<Event>();
+        eventList.add(event1);
+        eventList.add(event2);
+
+        when(eventRepository.findAll()).thenReturn(eventList);
+
+        List<Event> events = eventService.fetchAllEvents();
+
+        assertThat(events).isNotEmpty();
+        assertThat(events.size()).isEqualTo(2);
+
+    }
 
 
 }
